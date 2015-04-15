@@ -1,0 +1,29 @@
+{
+  "name": "expander-area-plot",
+  "version": "1.0.0",
+  "description": "A d3 area plotter",
+  "main": "expander-area-plot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfarid27/expander-area-plot.git"
+  },
+  "keywords": [
+    "D3",
+    "area",
+    "plot",
+    "data",
+    "visualization"
+  ],
+  "author": "J. Farid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jfarid27/expander-area-plot/issues"
+  },
+  "homepage": "https://github.com/jfarid27/expander-area-plot",
+  "devDependencies": {
+    "d3": "^3.5.5"
+  }
+}
