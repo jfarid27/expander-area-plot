@@ -1,8 +1,6 @@
 (function(){
 
-    var d3 = require('d3')
-
-    module.exports = function(){
+    module.exports = function(d3){
 
         var selection, shownPoints
 
@@ -78,7 +76,12 @@
 
         var dispatch = d3.dispatch('brushend', 'update', 'draw')
 
+        var svg
+
         var exports = function(){
+
+            svg = selection.append('g')
+                .classed('expander-area', true)
 
             axis.x.scale
                 .range([settings.x.margin +
@@ -90,16 +93,16 @@
                 .range([settings.y.margin + 
                     settings.y['axis-width'], settings.y.margin ])
 
-            axis.x.group = selection.append('g')
+            axis.x.group = svg.append('g')
                 .classed('expandplot-x-axis', true)
 
-            axis.y.group = selection.append('g')
+            axis.y.group = svg.append('g')
                 .classed('expandplot-y-axis', true)
 
-            plot.group = selection.append('g')
+            plot.group = svg.append('g')
                 .classed('expandplot-plot', true)
 
-            brush.group = selection.append('g')
+            brush.group = svg.append('g')
                 .classed('expandplot-brush', true)
 
             brush.rect = brush.group

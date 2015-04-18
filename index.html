@@ -16,9 +16,6 @@
 
         module = {'exports': undefined}
 
-        require = function(){
-            return d3 
-        }
 
     </script>
     <script src="expander-area-plot.js"></script>
@@ -107,7 +104,7 @@
                     
             })
 
-            var plot = module.exports()
+            var plot = module.exports(d3)
                 .selection(svg)
                 .dateParse(d3.time.format("%d-%b-%y").parse)
                 .brushStart(data[data.length - 20].date)

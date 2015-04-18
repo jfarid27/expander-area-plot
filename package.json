@@ -23,7 +23,7 @@
     "url": "https://github.com/jfarid27/expander-area-plot/issues"
   },
   "homepage": "https://github.com/jfarid27/expander-area-plot",
-  "devDependencies": {
+  "dependencies": {
     "d3": "^3.5.5"
   }
 }
