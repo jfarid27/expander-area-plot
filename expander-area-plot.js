@@ -21,7 +21,8 @@
                 'color': '#903b20',
                 'width': undefined,
                 'startDate': undefined
-            }
+            },
+            'time': true
         }
 
         var plot = {
@@ -30,7 +31,7 @@
 
         var axis = {
             'x': {
-                'scale': d3.time.scale(),
+                'scale': undefined,
                 'group': undefined, 
                 'svg': d3.svg.axis()
             },
@@ -50,7 +51,7 @@
         var path = {
             'update': d3.svg.area()
                 .x(function(d) {
-                    return axis.x.scale(parse(d.date));
+                    return axis.x.scale(parse(d.x));
                 })
                 .y1(function(d) {
                     return axis.y.scale(d.y1); 
@@ -60,14 +61,14 @@
                 }),
             'initial': d3.svg.area()
                 .x(function(d) {
-                    return axis.x.scale(parse(d.date));
+                    return axis.x.scale(parse(d.x));
                 })
         }
 
         var lines = {
             'update': d3.svg.line()
                 .x(function(d) {
-                    return axis.x.scale(parse(d.date));
+                    return axis.x.scale(parse(d.x));
                 })
                 .y(function(d) {
                     return axis.y.scale(d.y); 
@@ -79,6 +80,13 @@
         var svg
 
         var exports = function(){
+
+            if (settings.time){
+                axis.x.scale = d3.time.scale()
+            } else {
+                axis.x.scale = d3.scale.linear()
+                axis.x.Oscale = d3.scale.ordinal()
+            }
 
             svg = selection.append('g')
                 .classed('expander-area', true)
@@ -292,6 +300,19 @@
 
         }
 
+        exports.settings.time = function(){
+        /*Sets or gets time transformation 
+        */
+
+            if (arguments.length > 0){
+                settings.time = arguments[0]
+                return exports
+            }
+            return settings.time
+
+        }
+        
+
         exports.axis = function(){
         /*Sets or gets entire axis object
         */
@@ -411,14 +432,29 @@
                 parse(data.x.min), 
                 parse(data.x.max), 
             ]);
+           
+            if (!settings.time){
+                axis.x.Oscale
+                    .domain(data.areas[0]
+                        .areaPoints.map(function(d){return d.x}))
+                    .range(data.areas[0]
+                        .areaPoints.map(function(d){return axis.x.scale(parse(d.x))}))
+            }
 
             axis.y.scale.domain([data.y.min, data.y.max]) 
             axis.x.svg.scale(axis.x.scale)
             axis.y.svg.scale(axis.y.scale)
 
-            var next = d3.time.day.offset(parse(data.x.min), 1)
-            settings.brush.width = axis.x.scale(next) 
-                - axis.x.scale(parse(data.x.min))
+            if (settings.time){
+                var next = d3.time.day.offset(parse(data.x.min), 1)
+                settings.brush.width = axis.x.scale(next) 
+                    - axis.x.scale(parse(data.x.min))
+            } else {
+                var next = axis.x.Oscale.domain()[1]
+                var prev = axis.x.Oscale.domain()[0]
+                settings.brush.width = axis.x.scale(next)
+                    - axis.x.scale(prev)
+            }
 
             brush.rect.attr('width', settings.brush.width)
 
@@ -452,14 +488,35 @@
                 var self = {
                     'x': brush.rect.attr('x'),
                 }
-                var exact_date = axis.x.scale.invert(parseFloat(self.x))
-                var rounded_date = d3.time.day.floor(exact_date)
-                if (inPlotWindow(self)){
-                    brush.rect.transition().duration(2000)
-                        .attr('x', axis.x.scale(rounded_date))
-                    var date_extent = [rounded_date, 
-                        d3.time.day.offset(rounded_date, 1)]
-                    dispatch.brushend(date_extent)
+                var exact_start = axis.x.scale.invert(parseFloat(self.x))
+                if(settings.time){
+                    var rounded_date = d3.time.day
+                        .floor(exact_start)
+                    if (inPlotWindow(self)){
+                        brush.rect.transition().duration(2000)
+                            .attr('x', axis.x.scale(rounded_date))
+                        var date_extent = [rounded_date, 
+                            d3.time.day.offset(rounded_date, 1)]
+                        dispatch.brushend(date_extent)
+                    }
+                } else {
+                var exact_end = axis.x.scale
+                    .invert(parseFloat(self.x) + 
+                        parseFloat(brush.rect.attr('width')))
+
+                    var embedded_point = axis.x.Oscale.domain()
+                        .filter(function(point){
+                            return point < exact_end &&
+                                point > exact_start
+                        })
+
+                    if (embedded_point.length > 0){
+                        brush.rect.transition().duration(2000)
+                            .attr('x', axis.x.scale(embedded_point[0]))
+                    }
+
+                    dispatch.brushend(embedded_point)                   
+
                 }
 
             })
