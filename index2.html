@@ -60,45 +60,11 @@
                             'y0': (centerLine[index-20] ) +
                                 (-5 * ind ) + ( 3 * ind * lineInd ) +
                                    Math.random() ,
-                            'x': data[data.length-index-1].date
+                            'x': index
                         }
                     }),
                     'style':{
                         'color': colors(lineInd)
-                    }
-                }
-                    
-            })
-            var areaData2 = d3.range(2).map(function(line, lineInd){ 
-                return {
-                    'areaPoints': d3.range(20, 40,1).map(function(index, ind){
-                        return {
-                            'y1': (centerLine[index-20] ) + 
-                                (10 * ind) + ( -3 * ind * lineInd ) +  
-                                   Math.random() ,
-                            'y0': (centerLine[index-20] ) +
-                                (-10 * ind ) + ( 3 * ind * lineInd ) +
-                                   Math.random() ,
-                            'x': data[data.length-index-1].date
-                        }
-                    }),
-                    'style':{
-                        'color': colors(lineInd)
-                    }
-                }
-                    
-            })
-
-            var lineData = d3.range(1).map(function(line, lineInd){ 
-                return {
-                    'linePoints': d3.range(20).map(function(index){
-                        return {
-                            'y': (10 * index) + Math.random() * 20,
-                            'x': data[data.length-index-1].date
-                        }
-                    }),
-                    'style':{
-                        'color': colors(lineInd + 4)
                     }
                 }
                     
@@ -106,30 +72,19 @@
 
             var plot = module.exports(d3)
                 .selection(svg)
-                .dateParse(d3.time.format("%d-%b-%y").parse)
-                .brushStart(data[data.length - 20].date)
+                .settings.time(false)
+                .brushStart(0)
 
             plot()
 
             var events = plot.dispatch()
 
             events.draw({
-                lines: lineData,
                 areas: areaData,
-                x: { min: '24-Apr-07', max: '19-Jun-07' },
+                lines: [],
+                x: { min: 0, max: 40 },
                 y: { min: 0, max: 400 } 
             })
-
-            setTimeout(function(){
-                events.draw({
-                    lines: lineData,
-                    areas: areaData2,
-                    x: { min: '24-Apr-07', max: '19-Jun-07' },
-                    y: { min: 0, max: 400 } 
-                })
-
-
-            }, 7000)
 
             plot.on('brushend', function(extent){
                 console.log(extent)
