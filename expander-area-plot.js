@@ -488,21 +488,28 @@
                 var self = {
                     'x': brush.rect.attr('x'),
                 }
+
                 var exact_start = axis.x.scale.invert(parseFloat(self.x))
+
                 if(settings.time){
                     var rounded_date = d3.time.day
                         .floor(exact_start)
+                    var next_date = d3.time.day.offset(exact_start, 1)
                     if (inPlotWindow(self)){
                         brush.rect.transition().duration(2000)
-                            .attr('x', axis.x.scale(rounded_date))
+                            .attr('x', 
+                                (axis.x.scale(next_date) + axis.x.scale(rounded_date))/2 )
                         var date_extent = [rounded_date, 
                             d3.time.day.offset(rounded_date, 1)]
                         dispatch.brushend(date_extent)
                     }
                 } else {
-                var exact_end = axis.x.scale
-                    .invert(parseFloat(self.x) + 
-                        parseFloat(brush.rect.attr('width')))
+
+                    var rectangleWidth = parseFloat(brush.rect.attr('width'))
+
+                    var exact_end = axis.x.scale
+                        .invert(parseFloat(self.x) + 
+                            rectangleWidth)
 
                     var embedded_point = axis.x.Oscale.domain()
                         .filter(function(point){
@@ -512,7 +519,8 @@
 
                     if (embedded_point.length > 0){
                         brush.rect.transition().duration(2000)
-                            .attr('x', axis.x.scale(embedded_point[0]))
+                            .attr('x', axis.x.scale(embedded_point[0]) - 
+                                (rectangleWidth/2) )
                     }
 
                     dispatch.brushend(embedded_point)                   
