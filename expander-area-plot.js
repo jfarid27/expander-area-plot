@@ -33,12 +33,14 @@
             'x': {
                 'scale': undefined,
                 'group': undefined, 
-                'svg': d3.svg.axis()
+                'svg': d3.svg.axis(),
+                'transformer': function(i) {return i}
             },
             'y': {
                 'scale': d3.scale.linear(),
                 'group': undefined,
-                'svg': d3.svg.axis()
+                'svg': d3.svg.axis(),
+                'transformer': function(i) {return i}
             }
         }
 
@@ -84,9 +86,12 @@
             if (settings.time){
                 axis.x.scale = d3.time.scale()
             } else {
+                axis.x.svg.tickFormat(axis.x.transformer)
                 axis.x.scale = d3.scale.linear()
                 axis.x.Oscale = d3.scale.ordinal()
             }
+
+            axis.y.svg.tickFormat(axis.y.transformer)
 
             svg = selection.append('g')
                 .classed('expander-area', true)
@@ -100,6 +105,7 @@
             axis.y.scale
                 .range([settings.y.margin + 
                     settings.y['axis-width'], settings.y.margin ])
+
 
             axis.x.group = svg.append('g')
                 .classed('expandplot-x-axis', true)
@@ -371,6 +377,28 @@
             }
             return axis.y.scale
 
+        }
+
+        exports.axis.x.transformer = function(){
+        /*Sets or gets axis.x.transformer for tick formatting 
+        */
+
+            if (arguments.length > 0){
+                axis.x.transformer = arguments[0]
+                return exports
+            }
+            return axis.x.transformer
+        }
+
+        exports.axis.y.transformer = function(){
+        /*Sets or gets axis.y.transformer for tick formatting 
+        */
+
+            if (arguments.length > 0){
+                axis.y.transformer = arguments[0]
+                return exports
+            }
+            return axis.y.transformer
         }
 
         exports.selection = function(){
