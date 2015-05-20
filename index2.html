@@ -74,6 +74,7 @@
                 .selection(svg)
                 .settings.time(false)
                 .brushStart(0)
+                .axis.x.transformer(function(d){ return d + '%' })
 
             plot()
 

@@ -1,6 +1,6 @@
 {
   "name": "expander-area-plot",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A d3 area plotter",
   "main": "expander-area-plot.js",
   "scripts": {
