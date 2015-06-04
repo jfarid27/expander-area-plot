@@ -172,7 +172,7 @@
 
                     plot.group
                         .append("path")
-                        .datum(line.linePoints)
+                        .data(line.linePoints)
                         .classed("expandplot-line", true)
                         .attr("id", function(d){
                             return d.id || index
