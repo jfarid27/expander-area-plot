@@ -32,15 +32,17 @@
         var axis = {
             'x': {
                 'scale': undefined,
-                'group': undefined, 
+                'group': undefined,
                 'svg': d3.svg.axis(),
-                'transformer': function(i) {return i}
+                'transformer': function(i) {return i},
+                'label': undefined
             },
             'y': {
                 'scale': d3.scale.linear(),
                 'group': undefined,
                 'svg': d3.svg.axis(),
-                'transformer': function(i) {return i}
+                'transformer': function(i) {return i},
+                'label': undefined
             }
         }
 
@@ -56,10 +58,10 @@
                     return axis.x.scale(parse(d.x));
                 })
                 .y1(function(d) {
-                    return axis.y.scale(d.y1); 
+                    return axis.y.scale(d.y1);
                 })
                 .y0(function(d) {
-                    return axis.y.scale(d.y0); 
+                    return axis.y.scale(d.y0);
                 }),
             'initial': d3.svg.area()
                 .x(function(d) {
@@ -73,7 +75,7 @@
                     return axis.x.scale(parse(d.x));
                 })
                 .y(function(d) {
-                    return axis.y.scale(d.y); 
+                    return axis.y.scale(d.y);
                 })
         }
 
@@ -99,11 +101,11 @@
             axis.x.scale
                 .range([settings.x.margin +
                     settings.x['gutter'],
-                        settings.x.margin + settings.x['axis-width'] + 
+                        settings.x.margin + settings.x['axis-width'] +
                     settings.x.gutter])
 
             axis.y.scale
-                .range([settings.y.margin + 
+                .range([settings.y.margin +
                     settings.y['axis-width'], settings.y.margin ])
 
 
@@ -130,7 +132,7 @@
             dispatch.on('draw', function(data){
 
                 plot.group.selectAll('path')
-                    .attr('d', path.initial) 
+                    .attr('d', path.initial)
                     .transition().duration(200)
                     .remove()
 
@@ -140,16 +142,35 @@
                 axis.x.svg.scale(axis.x.scale).orient('bottom')
                 axis.y.svg.scale(axis.y.scale).orient('left')
 
+
                 axis.x.group
-                    .attr("transform", "translate(0," 
-                        + (settings.y.margin 
+                    .attr("transform", "translate(0,"
+                        + (settings.y.margin
                             + settings.y['axis-width'] ) + ")")
                     .call(axis.x.svg)
 
                 axis.y.group.call(axis.y.svg)
-                    .attr("transform", "translate(" 
-                        + (settings.x.margin 
+                    .attr("transform", "translate("
+                        + (settings.x.margin
                             + settings.x['gutter'] ) + ",0)")
+
+                axis.y.group
+                    .append('text')
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", -(settings.x.gutter + 7))
+                        .attr("x", -settings.y.margin 
+                            - (settings.y['axis-width']*.5))
+                        .style("text-anchor", "center")
+                        .text(axis.y.label)
+
+                axis.x.group
+                    .append('text')
+                        .attr("y", settings.y.gutter + 7)
+                        .attr("x", settings.x.margin 
+                            + (settings.x['axis-width']*.5))
+                        .style("text-anchor", "center")
+                        .text(axis.x.label)
+
 
                 data.areas.map(function(area, index){
 
@@ -185,8 +206,8 @@
                 })
 
                 brush.rect
-                    .attr('height', settings.y['axis-width']) 
-                    .attr('y', settings.y['margin']) 
+                    .attr('height', settings.y['axis-width'])
+                    .attr('y', settings.y['margin'])
                     .attr('x', function(){
                         return axis.x.scale.range()[0]
                     })
@@ -203,7 +224,7 @@
             dispatch.on('update', function(data){
 
                 plot.group.selectAll('path')
-                    .attr('d', path.initial) 
+                    .attr('d', path.initial)
                     .transition().duration(200)
                     .remove()
 
@@ -214,16 +235,16 @@
                 axis.y.svg.scale(axis.y.scale).orient('left')
 
                 axis.x.group
-                    .attr("transform", "translate(0," 
-                        + (settings.y.margin 
+                    .attr("transform", "translate(0,"
+                        + (settings.y.margin
                             + settings.y['axis-width'] ) + ")")
                     .call(axis.x.svg)
 
                 axis.y.group.call(axis.y.svg)
-                    .attr("transform", "translate(" 
-                        + (settings.x.margin 
+                    .attr("transform", "translate("
+                        + (settings.x.margin
                             + settings.x['gutter'] ) + ",0)")
-                
+
 
                 data.areas.map(function(area, index){
 
@@ -232,10 +253,10 @@
                             return axis.x.scale(parse(d.date));
                         })
                         .y1(function(d) {
-                            return axis.y.scale(d.y1); 
+                            return axis.y.scale(d.y1);
                         })
                         .y0(function(d) {
-                            return axis.y.scale(d.y0); 
+                            return axis.y.scale(d.y0);
                         })
 
                     plot.group
@@ -307,7 +328,7 @@
         }
 
         exports.settings.time = function(){
-        /*Sets or gets time transformation 
+        /*Sets or gets time transformation
         */
 
             if (arguments.length > 0){
@@ -317,7 +338,7 @@
             return settings.time
 
         }
-        
+
 
         exports.axis = function(){
         /*Sets or gets entire axis object
@@ -379,8 +400,30 @@
 
         }
 
+        exports.axis.x.label = function(){
+        /*Sets or gets axis.x.label for axis formatting
+        */
+
+            if (arguments.length > 0){
+                axis.x.label = arguments[0]
+                return exports
+            }
+            return axis.x.label
+        }
+
+        exports.axis.y.label = function(){
+        /*Sets or gets axis.y.label for axis formatting
+        */
+
+            if (arguments.length > 0){
+                axis.y.label = arguments[0]
+                return exports
+            }
+            return axis.y.label
+        }
+
         exports.axis.x.transformer = function(){
-        /*Sets or gets axis.x.transformer for tick formatting 
+        /*Sets or gets axis.x.transformer for tick formatting
         */
 
             if (arguments.length > 0){
@@ -391,7 +434,7 @@
         }
 
         exports.axis.y.transformer = function(){
-        /*Sets or gets axis.y.transformer for tick formatting 
+        /*Sets or gets axis.y.transformer for tick formatting
         */
 
             if (arguments.length > 0){
@@ -403,7 +446,7 @@
 
         exports.selection = function(){
         /*Sets or gets an svg d3.selection to place visualization on.
-        */ 
+        */
 
             if (arguments.length > 0){
                 selection = arguments[0]
@@ -421,7 +464,7 @@
                 dispatch = arguments[0]
                 return exports
             }
-            return dispatch 
+            return dispatch
 
         }
 
@@ -434,7 +477,7 @@
                 parse = arguments[0]
                 return exports
             }
-            return parse 
+            return parse
 
         }
 
@@ -447,7 +490,7 @@
                 settings.brush.startDate = parse(arguments[0])
                 return exports
             }
-            return settings.brush.startDate 
+            return settings.brush.startDate
 
         }
 
@@ -457,10 +500,10 @@
         */
             axis.x.scale
             .domain([
-                parse(data.x.min), 
-                parse(data.x.max), 
+                parse(data.x.min),
+                parse(data.x.max),
             ]);
-           
+
             if (!settings.time){
                 axis.x.Oscale
                     .domain(data.areas[0]
@@ -469,13 +512,13 @@
                         .areaPoints.map(function(d){return axis.x.scale(parse(d.x))}))
             }
 
-            axis.y.scale.domain([data.y.min, data.y.max]) 
+            axis.y.scale.domain([data.y.min, data.y.max])
             axis.x.svg.scale(axis.x.scale)
             axis.y.svg.scale(axis.y.scale)
 
             if (settings.time){
                 var next = d3.time.day.offset(parse(data.x.min), 1)
-                settings.brush.width = axis.x.scale(next) 
+                settings.brush.width = axis.x.scale(next)
                     - axis.x.scale(parse(data.x.min))
             } else {
                 var next = axis.x.Oscale.domain()[1]
@@ -488,26 +531,26 @@
 
             path.initial
             .y1(function(d) {
-                return axis.y.scale((data.y.max-data.y.min) / 2); 
+                return axis.y.scale((data.y.max-data.y.min) / 2);
             })
             .y0(function(d) {
-                return axis.y.scale((data.y.max-data.y.min) / 2); 
+                return axis.y.scale((data.y.max-data.y.min) / 2);
             })
 
         }
 
         function updateBrush(){
-        /*Function to update the brush rectangle using 
+        /*Function to update the brush rectangle using
           previously updated scale parameters
         */
             brush.instance.on('drag', function() {
                 if (inPlotWindow(d3.event)){
-                    brush.rect 
-                    .attr("x", Math.max(settings.brush.width, 
-                        Math.min(axis.x.scale.range()[1] - settings.brush.width, 
+                    brush.rect
+                    .attr("x", Math.max(settings.brush.width,
+                        Math.min(axis.x.scale.range()[1] - settings.brush.width,
                             d3.event.x)
-                        ) 
-                    ) 
+                        )
+                    )
                 }
 
             })
@@ -525,9 +568,9 @@
                     var next_date = d3.time.day.offset(exact_start, 1)
                     if (inPlotWindow(self)){
                         brush.rect.transition().duration(2000)
-                            .attr('x', 
+                            .attr('x',
                                 (axis.x.scale(next_date) + axis.x.scale(rounded_date))/2 )
-                        var date_extent = [rounded_date, 
+                        var date_extent = [rounded_date,
                             d3.time.day.offset(rounded_date, 1)]
                         dispatch.brushend(date_extent)
                     }
@@ -536,7 +579,7 @@
                     var rectangleWidth = parseFloat(brush.rect.attr('width'))
 
                     var exact_end = axis.x.scale
-                        .invert(parseFloat(self.x) + 
+                        .invert(parseFloat(self.x) +
                             rectangleWidth)
 
                     var embedded_point = axis.x.Oscale.domain()
@@ -547,17 +590,17 @@
 
                     if (embedded_point.length > 0){
                         brush.rect.transition().duration(2000)
-                            .attr('x', axis.x.scale(embedded_point[0]) - 
+                            .attr('x', axis.x.scale(embedded_point[0]) -
                                 (rectangleWidth/2) )
                     }
 
-                    dispatch.brushend(embedded_point)                   
+                    dispatch.brushend(embedded_point)
 
                 }
 
             })
 
-            svg.call(brush.instance) 
+            svg.call(brush.instance)
         }
 
         function inPlotWindow(point){

@@ -21,7 +21,7 @@
     <script src="expander-area-plot.js"></script>
     <script>
 
-        var settings = { 
+        var settings = {
             'x':{
                 'margin':60,
                 'gutter':60,
@@ -29,16 +29,16 @@
             },
             'y':{
                 'margin':20,
-                'gutter':30,
+                'gutter':40,
                 'axis-width':600,
             }
         }
 
         var svg = d3.select('body').append('svg')
-            .attr('width', settings.x.margin + 
+            .attr('width', settings.x.margin +
                 settings.x.gutter +
                 settings.x['axis-width'])
-            .attr('height', settings.y.margin + 
+            .attr('height', settings.y.margin +
                 settings.y.gutter +
                 settings.y['axis-width'])
 
@@ -50,12 +50,12 @@
                 return 10*index
             })
 
-            var areaData = d3.range(2).map(function(line, lineInd){ 
+            var areaData = d3.range(2).map(function(line, lineInd){
                 return {
                     'areaPoints': d3.range(20, 40,1).map(function(index, ind){
                         return {
-                            'y1': (centerLine[index-20] ) + 
-                                (5 * ind) + ( -3 * ind * lineInd ) +  
+                            'y1': (centerLine[index-20] ) +
+                                (5 * ind) + ( -3 * ind * lineInd ) +
                                    Math.random() ,
                             'y0': (centerLine[index-20] ) +
                                 (-5 * ind ) + ( 3 * ind * lineInd ) +
@@ -67,7 +67,7 @@
                         'color': colors(lineInd)
                     }
                 }
-                    
+
             })
 
             var plot = module.exports(d3)
@@ -75,6 +75,8 @@
                 .settings.time(false)
                 .brushStart(0)
                 .axis.x.transformer(function(d){ return d + '%' })
+                .axis.y.label('foo')
+                .axis.x.label('bar')
 
             plot()
 
@@ -84,7 +86,7 @@
                 areas: areaData,
                 lines: [],
                 x: { min: 0, max: 40 },
-                y: { min: 0, max: 400 } 
+                y: { min: 0, max: 400 }
             })
 
             plot.on('brushend', function(extent){
