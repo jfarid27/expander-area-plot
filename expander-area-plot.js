@@ -165,7 +165,7 @@
 
                 axis.x.group
                     .append('text')
-                        .attr("y", settings.y.gutter + 7)
+                        .attr("y", settings.y.gutter + 5)
                         .attr("x", settings.x.margin 
                             + (settings.x['axis-width']*.5))
                         .style("text-anchor", "center")
