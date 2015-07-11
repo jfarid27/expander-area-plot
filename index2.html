@@ -50,7 +50,7 @@
                 return 10*index
             })
 
-            var areaData = d3.range(2).map(function(line, lineInd){
+            var areaData = d3.range(2).map(function(areaInd, lineInd){
                 return {
                     'areaPoints': d3.range(20, 40,1).map(function(index, ind){
                         return {
@@ -70,6 +70,28 @@
 
             })
 
+            var areaData2 =
+                d3.range(2).map(function(line, lineInd){
+                    return {
+                        'areaPoints': d3.range(20, 40,1).map(function(index, ind){
+                            return {
+                                'y1': (centerLine[index-20] ) +
+                                    (5 * ind) + ( -5 * ind * lineInd ) +
+                                       Math.random() ,
+                                'y0': (centerLine[index-20] ) +
+                                    (-5 * ind ) + ( 3 * ind * lineInd ) +
+                                       Math.random() ,
+                                'x': index
+                            }
+                        }),
+                        'style':{
+                            'color': colors(lineInd)
+                        }
+                    }
+
+                })
+
+
             var plot = module.exports(d3)
                 .selection(svg)
                 .settings.time(false)
@@ -88,6 +110,20 @@
                 x: { min: 0, max: 40 },
                 y: { min: 0, max: 400 }
             })
+
+            setTimeout(function(){
+                events.update({
+                    areas: areaData2,
+                    lines: [],
+                    x: { min: 0, max: 40 },
+                    y: { min: 0, max: 400 }
+                })
+            }, 3000)
+
+            setTimeout(function(){
+                events.draw()
+            }, 6000)
+
 
             plot.on('brushend', function(extent){
                 console.log(extent)

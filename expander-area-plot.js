@@ -132,9 +132,13 @@
             dispatch.on('draw', function(data){
 
                 plot.group.selectAll('path')
-                    .attr('d', path.initial)
-                    .transition().duration(200)
-                    .remove()
+                    .transition().duration(900)
+                        .attr('d', path.initial)
+                        .remove()
+
+                if (!data){
+                    return
+                }
 
                 updateScales(data)
                 updateBrush()
@@ -158,7 +162,7 @@
                     .append('text')
                         .attr("transform", "rotate(-90)")
                         .attr("y", -(settings.x.gutter + 7))
-                        .attr("x", -settings.y.margin 
+                        .attr("x", -settings.y.margin
                             - (settings.y['axis-width']*.5))
                         .style("text-anchor", "center")
                         .text(axis.y.label)
@@ -166,7 +170,7 @@
                 axis.x.group
                     .append('text')
                         .attr("y", settings.y.gutter + 5)
-                        .attr("x", settings.x.margin 
+                        .attr("x", settings.x.margin
                             + (settings.x['axis-width']*.5))
                         .style("text-anchor", "center")
                         .text(axis.x.label)
@@ -174,13 +178,12 @@
 
                 data.areas.map(function(area, index){
 
-
                     plot.group
                         .append("path")
                         .datum(area.areaPoints)
                         .classed("expandplot-area", true)
                         .attr("id", function(d){
-                            return d.id || index
+                            return d.id ? d.id : "p-" + index
                         })
                         .attr("d", path.initial)
                         .style("stroke", area.style.color)
@@ -196,7 +199,7 @@
                         .data(line.linePoints)
                         .classed("expandplot-line", true)
                         .attr("id", function(d){
-                            return d.id || index
+                            return d.id ? d.id : "l-" + index
                         })
                         .attr("d", lines.update)
                         .style("stroke", line.style.color)
@@ -223,11 +226,6 @@
 
             dispatch.on('update', function(data){
 
-                plot.group.selectAll('path')
-                    .attr('d', path.initial)
-                    .transition().duration(200)
-                    .remove()
-
                 updateScales(data)
                 updateBrush()
 
@@ -245,43 +243,31 @@
                         + (settings.x.margin
                             + settings.x['gutter'] ) + ",0)")
 
-
                 data.areas.map(function(area, index){
 
-                    var instance = d3.svg.area()
-                        .x(function(d) {
-                            return axis.x.scale(parse(d.date));
-                        })
-                        .y1(function(d) {
-                            return axis.y.scale(d.y1);
-                        })
-                        .y0(function(d) {
-                            return axis.y.scale(d.y0);
-                        })
+                    var linkIndex = area.id ? area.id : index
 
-                    plot.group
-                        .append("path")
+                    var areaElement = plot.group
+                        .selectAll('path.expandplot-area#p-' + linkIndex)
                         .datum(area.areaPoints)
-                        .classed("expandplot-area", true)
-                        .attr("id", function(d){
-                            return d.id || index
-                        })
-                        .attr("d", path.update)
-                        .style("stroke", area.style.color)
-                        .style("fill", area.style.color)
+                        .transition().duration(2000)
+                            .attr('d', path.update)
+                            .style("stroke", area.style.color)
+                            .style("fill", area.style.color)
+
+
                 })
 
                 data.lines.map(function(line, index){
 
-                    plot.group
-                        .append("path")
+                    var linkIndex = area.id ? area.id : index
+
+                    var linkElement = plot.group
+                        .selectAll('path.expandplot-line#l-' + linkIndex)
                         .datum(line.linePoints)
-                        .classed("expandplot-line", true)
-                        .attr("id", function(d){
-                            return d.id || index
-                        })
-                        .attr("d", lines.update)
-                        .style("stroke", line.style.color)
+                        .transition().duration(2000)
+                            .attr('d', lines.update)
+                            .style("stroke", line.style.color)
 
                 })
 
