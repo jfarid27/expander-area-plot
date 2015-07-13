@@ -79,7 +79,7 @@
                 })
         }
 
-        var dispatch = d3.dispatch('brushend', 'update', 'draw')
+        var dispatch = d3.dispatch('brushend', 'update', 'draw', 'clear')
 
         var svg
 
@@ -129,19 +129,33 @@
                     .call(brush.instance)
 
 
-            dispatch.on('draw', function(data){
+            dispatch.on('clear', function(){
+                path.initial
+                .y1(function(d) {
+                    return axis.y.scale.range()[0];
+                })
+                .y0(function(d) {
+                    return axis.y.scale.range()[0];
+                })
+                .y(function(d){
+                    return axis.y.scale.range()[0];
+                })
 
                 plot.group.selectAll('path')
                     .transition().duration(900)
                         .attr('d', path.initial)
                         .remove()
+            })
 
-                if (!data){
-                    return
-                }
+            dispatch.on('draw', function(data){
 
                 updateScales(data)
                 updateBrush()
+
+                plot.group.selectAll('path')
+                    .transition().duration(900)
+                        .attr('d', path.initial)
+                        .remove()
 
                 axis.x.svg.scale(axis.x.scale).orient('bottom')
                 axis.y.svg.scale(axis.y.scale).orient('left')
@@ -196,7 +210,7 @@
 
                     plot.group
                         .append("path")
-                        .data(line.linePoints)
+                        .datum(line.linePoints)
                         .classed("expandplot-line", true)
                         .attr("id", function(d){
                             return d.id ? d.id : "l-" + index
@@ -260,7 +274,7 @@
 
                 data.lines.map(function(line, index){
 
-                    var linkIndex = area.id ? area.id : index
+                    var linkIndex = line.id ? line.id : index
 
                     var linkElement = plot.group
                         .selectAll('path.expandplot-line#l-' + linkIndex)
@@ -520,6 +534,9 @@
                 return axis.y.scale((data.y.max-data.y.min) / 2);
             })
             .y0(function(d) {
+                return axis.y.scale((data.y.max-data.y.min) / 2);
+            })
+            .y(function(d){
                 return axis.y.scale((data.y.max-data.y.min) / 2);
             })
 
