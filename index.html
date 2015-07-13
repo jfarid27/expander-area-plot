@@ -21,7 +21,7 @@
     <script src="expander-area-plot.js"></script>
     <script>
 
-        var settings = { 
+        var settings = {
             'x':{
                 'margin':60,
                 'gutter':60,
@@ -35,10 +35,10 @@
         }
 
         var svg = d3.select('body').append('svg')
-            .attr('width', settings.x.margin + 
+            .attr('width', settings.x.margin +
                 settings.x.gutter +
                 settings.x['axis-width'])
-            .attr('height', settings.y.margin + 
+            .attr('height', settings.y.margin +
                 settings.y.gutter +
                 settings.y['axis-width'])
 
@@ -50,12 +50,12 @@
                 return 10*index
             })
 
-            var areaData = d3.range(2).map(function(line, lineInd){ 
+            var areaData = d3.range(2).map(function(line, lineInd){
                 return {
                     'areaPoints': d3.range(20, 40,1).map(function(index, ind){
                         return {
-                            'y1': (centerLine[index-20] ) + 
-                                (5 * ind) + ( -3 * ind * lineInd ) +  
+                            'y1': (centerLine[index-20] ) +
+                                (5 * ind) + ( -3 * ind * lineInd ) +
                                    Math.random() ,
                             'y0': (centerLine[index-20] ) +
                                 (-5 * ind ) + ( 3 * ind * lineInd ) +
@@ -67,14 +67,14 @@
                         'color': colors(lineInd)
                     }
                 }
-                    
+
             })
-            var areaData2 = d3.range(2).map(function(line, lineInd){ 
+            var areaData2 = d3.range(2).map(function(line, lineInd){
                 return {
                     'areaPoints': d3.range(20, 40,1).map(function(index, ind){
                         return {
-                            'y1': (centerLine[index-20] ) + 
-                                (10 * ind) + ( -3 * ind * lineInd ) +  
+                            'y1': (centerLine[index-20] ) +
+                                (10 * ind) + ( -3 * ind * lineInd ) +
                                    Math.random() ,
                             'y0': (centerLine[index-20] ) +
                                 (-10 * ind ) + ( 3 * ind * lineInd ) +
@@ -86,10 +86,10 @@
                         'color': colors(lineInd)
                     }
                 }
-                    
+
             })
 
-            var lineData = d3.range(1).map(function(line, lineInd){ 
+            var lineData = d3.range(1).map(function(line, lineInd){
                 return {
                     'linePoints': d3.range(20).map(function(index){
                         return {
@@ -101,7 +101,22 @@
                         'color': colors(lineInd + 4)
                     }
                 }
-                    
+
+            })
+
+            var lineData2 = d3.range(1).map(function(line, lineInd){
+                return {
+                    'linePoints': d3.range(20).map(function(index){
+                        return {
+                            'y': (10 * index),
+                            'x': data[data.length-index-1].date
+                        }
+                    }),
+                    'style':{
+                        'color': colors(lineInd + 4)
+                    }
+                }
+
             })
 
             var plot = module.exports(d3)
@@ -117,19 +132,23 @@
                 lines: lineData,
                 areas: areaData,
                 x: { min: '24-Apr-07', max: '19-Jun-07' },
-                y: { min: 0, max: 400 } 
+                y: { min: 0, max: 400 }
             })
 
             setTimeout(function(){
-                events.draw({
-                    lines: lineData,
+                events.update({
+                    lines: lineData2,
                     areas: areaData2,
                     x: { min: '24-Apr-07', max: '19-Jun-07' },
-                    y: { min: 0, max: 400 } 
+                    y: { min: 0, max: 400 }
                 })
 
 
-            }, 7000)
+            }, 4000)
+
+            setTimeout(function(){
+                events.clear()
+            }, 10000)
 
             plot.on('brushend', function(extent){
                 console.log(extent)
